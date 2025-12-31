@@ -2,8 +2,8 @@
 chat.md
 
 # Rust
-/target/
-Cargo.lock
+**/target/
+**/Cargo.lock
 
 # npm
 node_modules/
