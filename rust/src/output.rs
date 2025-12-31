@@ -284,9 +284,9 @@ mod tests {
     }
 
     #[test]
-    fn test_snapshot_art() {
-        let hash = HashBits::from_seed(2026, "snapshot-test");
-        let result = OmikujiResult::from_hash(&hash, 2026, "snapshot-test");
-        insta::assert_snapshot!(result.omikuji_art, @"S#E#############");
+    fn test_art_output() {
+        let hash = HashBits::from_seed(2026, "art-test");
+        let result = OmikujiResult::from_hash(&hash, 2026, "art-test");
+        insta::assert_snapshot!(result.omikuji_art, @"S##E############");
     }
 }
