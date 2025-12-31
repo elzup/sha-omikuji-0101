@@ -1,5 +1,5 @@
 [package]
-name = "sha-omikuji"
+name = "hash-omikuji"
 version = "0.1.0"
 edition = "2021"
 description = "SHA-256 based deterministic fortune telling CLI"

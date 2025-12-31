@@ -77,7 +77,7 @@ impl OmikujiResult {
     pub fn format_text(&self, short: bool, show_seed: bool) -> String {
         let mut output = String::new();
 
-        output.push_str(&format!("🎍 SHA-Omikuji {} 🎍\n\n", self.year));
+        output.push_str(&format!("🎍 Hash-Omikuji {} 🎍\n\n", self.year));
 
         output.push_str(&format!("Lucky Number      : {}\n", self.lucky_number));
         output.push_str(&format!("Lucky Hex         : {}\n", self.lucky_hex));
@@ -226,7 +226,7 @@ mod tests {
     fn test_format_text_contains_header() {
         let result = create_test_result();
         let text = result.format_text(false, false);
-        assert!(text.contains("SHA-Omikuji 2026"));
+        assert!(text.contains("Hash-Omikuji 2026"));
     }
 
     #[test]

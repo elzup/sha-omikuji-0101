@@ -1,4 +1,4 @@
-# sha-omikuji
+# hash-omikuji
 
 SHA-256 based deterministic fortune telling CLI.
 
@@ -7,7 +7,7 @@ SHA-256 based deterministic fortune telling CLI.
 ## Usage
 
 ```bash
-npx sha-omikuji
+npx hash-omikuji
 ```
 
 ### Options
@@ -22,7 +22,7 @@ npx sha-omikuji
 ### Example Output
 
 ```
-🎍 SHA-Omikuji 2026 🎍
+🎍 Hash-Omikuji 2026 🎍
 
 Lucky Number      : 165
 Lucky Hex         : 0xBF

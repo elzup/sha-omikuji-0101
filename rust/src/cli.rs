@@ -10,7 +10,7 @@ fn get_default_seed() -> String {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "sha-omikuji")]
+#[command(name = "hash-omikuji")]
 #[command(author = "elzup")]
 #[command(version = "0.1.0")]
 #[command(about = "SHA-256 based deterministic fortune telling CLI")]
