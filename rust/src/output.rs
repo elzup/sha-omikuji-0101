@@ -1,4 +1,3 @@
-use crate::art::generate_omikuji_art;
 use crate::hash::HashBits;
 use crate::luck::{calculate_luck_scores, LuckScore, LuckType};
 use chrono::NaiveDate;
@@ -18,7 +17,6 @@ pub struct OmikujiResult {
     pub luck_scores: Vec<LuckScore>,
     pub entropy_check: String,
     pub fingerprint: String,
-    pub omikuji_art: String,
 }
 
 impl OmikujiResult {
@@ -51,7 +49,6 @@ impl OmikujiResult {
         let luck_scores = calculate_luck_scores(&scores, flags);
         let entropy_check = format!("0x{:03X}", entropy);
         let fingerprint = hash.hex_string();
-        let omikuji_art = generate_omikuji_art(hash.raw_bytes());
 
         Self {
             year,
@@ -66,7 +63,6 @@ impl OmikujiResult {
             luck_scores,
             entropy_check,
             fingerprint,
-            omikuji_art,
         }
     }
 
@@ -114,8 +110,6 @@ impl OmikujiResult {
 
         output.push_str(&format!("Entropy Check     : OK ({})\n", self.entropy_check));
 
-        output.push_str("\n[ Omikuji Art ]\n");
-        output.push_str(&format!("{}\n", self.omikuji_art));
 
         if show_seed {
             output.push_str(&format!("\nSeed              : {}\n", self.seed));
@@ -220,12 +214,6 @@ mod tests {
     }
 
     #[test]
-    fn test_omikuji_art_length() {
-        let result = create_test_result();
-        assert_eq!(result.omikuji_art.chars().count(), 16);
-    }
-
-    #[test]
     fn test_format_text_contains_header() {
         let result = create_test_result();
         let text = result.format_text(false, false);
@@ -283,10 +271,4 @@ mod tests {
         insta::assert_json_snapshot!(result);
     }
 
-    #[test]
-    fn test_art_output() {
-        let hash = HashBits::from_seed(2026, "art-test");
-        let result = OmikujiResult::from_hash(&hash, 2026, "art-test");
-        insta::assert_snapshot!(result.omikuji_art, @"▁▄▅▂█▆▁▅▅▆▅▅▃█▄█");
-    }
 }

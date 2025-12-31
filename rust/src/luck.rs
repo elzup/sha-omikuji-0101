@@ -92,9 +92,6 @@ impl LuckType {
         }
     }
 
-    pub fn index(&self) -> usize {
-        LuckType::ALL.iter().position(|&t| t == *self).unwrap()
-    }
 }
 
 #[derive(Debug, Clone, Serialize)]

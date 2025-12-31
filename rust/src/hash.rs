@@ -87,10 +87,6 @@ impl HashBits {
         self.get_bits(244, 12) as u16
     }
 
-    /// Get raw bytes for art generation
-    pub fn raw_bytes(&self) -> &[u8; 32] {
-        &self.bytes
-    }
 }
 
 #[cfg(test)]
@@ -206,10 +202,4 @@ mod tests {
         assert!(entropy <= 0xFFF); // 12 bits max
     }
 
-    #[test]
-    fn test_raw_bytes_length() {
-        let hash = HashBits::from_seed(2026, "test");
-        let bytes = hash.raw_bytes();
-        assert_eq!(bytes.len(), 32);
-    }
 }
