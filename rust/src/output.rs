@@ -287,6 +287,6 @@ mod tests {
     fn test_snapshot_art() {
         let hash = HashBits::from_seed(2026, "snapshot-test");
         let result = OmikujiResult::from_hash(&hash, 2026, "snapshot-test");
-        insta::assert_snapshot!("art", result.omikuji_art);
+        insta::assert_snapshot!(result.omikuji_art, @"S#E#############");
     }
 }
