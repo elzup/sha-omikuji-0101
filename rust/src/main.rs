@@ -1,25 +1,37 @@
 mod cli;
 mod hash;
 mod luck;
+mod output;
 
 use clap::Parser;
 use cli::Args;
+use hash::HashBits;
+use output::OmikujiResult;
 
 fn main() {
     let args = Args::parse();
 
     // Check if we can execute
-    match args.can_execute() {
-        Ok(show_warning) => {
-            if show_warning {
-                eprintln!("WARNING: Running outside January 1st with --force flag.");
-            }
-        }
+    let show_warning = match args.can_execute() {
+        Ok(warning) => warning,
         Err(msg) => {
             eprintln!("{}", msg);
             std::process::exit(1);
         }
+    };
+
+    if show_warning && !args.json {
+        eprintln!("WARNING: Running outside January 1st with --force flag.\n");
     }
 
-    println!("Year: {}, User: {}", args.year, args.user);
+    // Generate hash and result
+    let hash = HashBits::from_seed(args.year, &args.user);
+    let result = OmikujiResult::from_hash(&hash, args.year, &args.user);
+
+    // Output
+    if args.json {
+        println!("{}", result.format_json());
+    } else {
+        print!("{}", result.format_text(args.short, args.seed));
+    }
 }
