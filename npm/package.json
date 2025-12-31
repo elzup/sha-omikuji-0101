@@ -1,10 +1,10 @@
 {
-  "name": "sha-omikuji",
+  "name": "hash-omikuji",
   "version": "0.1.0",
   "description": "SHA-256 based deterministic fortune telling CLI - Only runs on January 1st!",
   "main": "index.js",
   "bin": {
-    "sha-omikuji": "./index.js"
+    "hash-omikuji": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +12,7 @@
   "keywords": [
     "omikuji",
     "fortune",
+    "hash",
     "sha256",
     "cli",
     "new-year"
@@ -20,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elzup/sha-omikuji"
+    "url": "https://github.com/elzup/hash-omikuji"
   },
   "engines": {
     "node": ">=14.0.0"

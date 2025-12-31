@@ -8,6 +8,7 @@ chat.md
 # npm
 node_modules/
 package-lock.json
+npm/bin/*/
 
 # OS
 .DS_Store

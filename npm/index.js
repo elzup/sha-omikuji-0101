@@ -9,7 +9,7 @@ function getBinaryName() {
   const platform = os.platform();
   const arch = os.arch();
 
-  let binaryName = 'sha-omikuji';
+  let binaryName = 'hash-omikuji';
 
   if (platform === 'win32') {
     binaryName += '.exe';
