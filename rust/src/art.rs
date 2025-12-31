@@ -1,53 +1,48 @@
-/// 1D randomart generator inspired by SSH randomart
-/// Uses 2-bit steps from SHA-256 hash to create a visual fingerprint
+/// Bar-chart style art using 256 bits of SHA-256 hash
+/// Each bar height represents visit count from a random walk
 
 pub fn generate_omikuji_art(hash_bytes: &[u8; 32]) -> String {
-    const WIDTH: usize = 16;
+    const WIDTH: usize = 32;
     let mut grid = [0u8; WIDTH];
-    let mut position: i32 = 0;
-    let start_pos = 0;
+
+    // Use random walk to distribute visits
+    let mut position: usize = WIDTH / 2;
 
     // Process all 256 bits as 2-bit pairs (128 steps)
     for byte in hash_bytes.iter() {
         for shift in (0..8).step_by(2) {
             let bits = (byte >> (6 - shift)) & 0b11;
+
+            // Move left or right with wrap-around
             let movement: i32 = match bits {
-                0b00 => 0, // stay
-                0b01 => 1, // right
-                0b10 => 2, // right x2
-                0b11 => 3, // right x3
+                0b00 => -1, // left
+                0b01 => 0,  // stay
+                0b10 => 1,  // right
+                0b11 => 2,  // right x2
                 _ => unreachable!(),
             };
 
-            position += movement;
-
-            // Wrap around (modulo)
-            position = position.rem_euclid(WIDTH as i32);
-
-            // Increment visit count (saturating at 255)
-            grid[position as usize] = grid[position as usize].saturating_add(1);
+            position = ((position as i32 + movement).rem_euclid(WIDTH as i32)) as usize;
+            grid[position] = grid[position].saturating_add(1);
         }
     }
 
-    let end_pos = position as usize;
+    // Bar characters: 8 levels of height
+    // ▁▂▃▄▅▆▇█
+    const BARS: &[char] = &[' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
-    // Build the art string
+    // Find max for normalization
+    let max_count = *grid.iter().max().unwrap_or(&1).max(&1);
+
     let mut art = String::with_capacity(WIDTH);
-    for (i, &count) in grid.iter().enumerate() {
-        let ch = if i == start_pos && i == end_pos {
-            'X' // Start and end at same position
-        } else if i == start_pos {
-            'S'
-        } else if i == end_pos {
-            'E'
-        } else if count == 0 {
-            '.'
-        } else if count == 1 {
-            '+'
+    for &count in grid.iter() {
+        // Normalize to 0-8 range
+        let level = if count == 0 {
+            0
         } else {
-            '#'
+            ((count as usize * 8) / max_count as usize).clamp(1, 8)
         };
-        art.push(ch);
+        art.push(BARS[level]);
     }
 
     art
@@ -69,9 +64,9 @@ mod tests {
 
     #[test]
     fn test_art_length() {
-        let hash = [0u8; 32];
+        let hash = make_hash(b"test");
         let art = generate_omikuji_art(&hash);
-        assert_eq!(art.len(), 16);
+        assert_eq!(art.chars().count(), 32, "Should have 32 bar characters");
     }
 
     #[test]
@@ -80,13 +75,6 @@ mod tests {
         let art1 = generate_omikuji_art(&hash);
         let art2 = generate_omikuji_art(&hash);
         assert_eq!(art1, art2);
-    }
-
-    #[test]
-    fn test_art_has_start_or_end() {
-        let hash = make_hash(b"some-user");
-        let art = generate_omikuji_art(&hash);
-        assert!(art.contains('S') || art.contains('E') || art.contains('X'));
     }
 
     #[test]
@@ -99,51 +87,52 @@ mod tests {
     }
 
     #[test]
-    fn test_all_zeros_produces_x() {
-        // All zeros = all "stay" moves, position stays at 0
-        let hash = [0u8; 32];
-        let art = generate_omikuji_art(&hash);
-        assert!(
-            art.starts_with('X'),
-            "Expected X at start for all-zero hash, got: {}",
-            art
-        );
-    }
-
-    #[test]
-    fn test_art_contains_only_valid_chars() {
+    fn test_art_contains_only_bar_chars() {
         let hash = make_hash(b"random-test-seed");
         let art = generate_omikuji_art(&hash);
+        let valid_chars: &[char] = &[' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
         for ch in art.chars() {
             assert!(
-                matches!(ch, 'S' | 'E' | 'X' | '.' | '+' | '#'),
-                "Invalid character in art: {}",
-                ch
+                valid_chars.contains(&ch),
+                "Invalid character in art: '{}' (code: {})",
+                ch,
+                ch as u32
             );
         }
     }
 
     #[test]
     fn test_art_many_seeds() {
-        // Test with many different seeds to ensure no panics
         for i in 0..100 {
             let seed = format!("test-seed-{}", i);
             let hash = make_hash(seed.as_bytes());
             let art = generate_omikuji_art(&hash);
-            assert_eq!(art.len(), 16);
+            assert_eq!(art.chars().count(), 32, "Seed {} should produce 32 chars", seed);
         }
     }
 
     #[test]
-    fn test_art_start_position() {
-        // Start position is always 0, so 'S' or 'X' should be at position 0
-        let hash = make_hash(b"check-start");
-        let art = generate_omikuji_art(&hash);
-        let first_char = art.chars().next().unwrap();
+    fn test_art_variety() {
+        let mut unique_arts = std::collections::HashSet::new();
+        for i in 0..20 {
+            let seed = format!("variety-test-{}", i);
+            let hash = make_hash(seed.as_bytes());
+            let art = generate_omikuji_art(&hash);
+            unique_arts.insert(art);
+        }
         assert!(
-            first_char == 'S' || first_char == 'X',
-            "First char should be S or X, got: {}",
-            first_char
+            unique_arts.len() >= 15,
+            "Should have at least 15 unique patterns out of 20, got {}",
+            unique_arts.len()
         );
+    }
+
+    #[test]
+    fn test_all_zeros_concentrated() {
+        // All zeros = all left moves, concentrated at one position
+        let hash = [0u8; 32];
+        let art = generate_omikuji_art(&hash);
+        // Should have at least one max bar (█)
+        assert!(art.contains('█'), "All zeros should produce concentrated visits");
     }
 }

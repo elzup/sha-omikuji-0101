@@ -222,7 +222,7 @@ mod tests {
     #[test]
     fn test_omikuji_art_length() {
         let result = create_test_result();
-        assert_eq!(result.omikuji_art.len(), 16);
+        assert_eq!(result.omikuji_art.chars().count(), 32, "Should have 32 bar characters");
     }
 
     #[test]
@@ -287,6 +287,6 @@ mod tests {
     fn test_art_output() {
         let hash = HashBits::from_seed(2026, "art-test");
         let result = OmikujiResult::from_hash(&hash, 2026, "art-test");
-        insta::assert_snapshot!(result.omikuji_art, @"S##E############");
+        insta::assert_snapshot!(result.omikuji_art, @"▄▄▃▁▁ ▁▂▃▁▄▄▄▇█▆▂▄▃▄▁▂▁▄▁▂▁▁▄▃▆▃");
     }
 }
