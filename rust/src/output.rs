@@ -1,5 +1,5 @@
 use crate::hash::HashBits;
-use crate::luck::{calculate_luck_scores, LuckScore, LuckType};
+use crate::luck::{calculate_luck_scores, LuckScore};
 use chrono::NaiveDate;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
@@ -22,6 +22,9 @@ pub struct OmikujiResult {
     pub lucky_day: String,
     pub lucky_day_number: u16,
     pub lucky_time: String,
+    pub lucky_power_of_2: u8,
+    pub lucky_ascii: char,
+    pub lucky_logic_gate: String,
     pub luck_scores: Vec<LuckScore>,
     pub entropy_check: String,
     pub fingerprint: String,
@@ -35,7 +38,9 @@ impl OmikujiResult {
         let lucky_day_num = hash.lucky_day();
         let lucky_hour = hash.lucky_hour();
         let lucky_minute = hash.lucky_minute();
-        let flags = hash.luck_flags();
+        let lucky_power_of_2 = hash.lucky_power_of_2();
+        let lucky_ascii = hash.lucky_ascii();
+        let lucky_logic_gate = hash.lucky_logic_gate().to_string();
         let scores = hash.luck_scores();
         let entropy = hash.entropy_check();
 
@@ -54,7 +59,7 @@ impl OmikujiResult {
         let lucky_day = format!("{} ({} / 365)", lucky_date.format("%Y-%m-%d"), lucky_day_num);
         let lucky_time = format!("{:02}:{:02}", lucky_hour, lucky_minute);
 
-        let luck_scores = calculate_luck_scores(&scores, flags);
+        let luck_scores = calculate_luck_scores(&scores);
         let entropy_check = format!("0x{:03X}", entropy);
         let fingerprint = hash.hex_string();
 
@@ -68,6 +73,9 @@ impl OmikujiResult {
             lucky_day,
             lucky_day_number: lucky_day_num,
             lucky_time,
+            lucky_power_of_2,
+            lucky_ascii,
+            lucky_logic_gate,
             luck_scores,
             entropy_check,
             fingerprint,
@@ -89,24 +97,17 @@ impl OmikujiResult {
         output.push_str(&format!("Lucky Time        : {}\n", self.lucky_time));
         output.push('\n');
 
-        output.push_str("Active Luck Flags :\n");
-        let flag_line: Vec<String> = LuckType::ALL
-            .iter()
-            .take(if short { 5 } else { 16 })
-            .map(|lt| {
-                let score = self.luck_scores.iter().find(|s| s.luck_type == *lt).unwrap();
-                let mark = if score.active { "✔" } else { "✖" };
-                format!("{} {}", mark, lt.name().replace(" Luck", ""))
-            })
-            .collect();
-        output.push_str(&format!("{}\n\n", flag_line.join("  ")));
+        output.push_str(&format!("Lucky Power of 2  : {}\n", self.lucky_power_of_2));
+        output.push_str(&format!("Lucky ASCII       : '{}'\n", self.lucky_ascii));
+        output.push_str(&format!("Lucky Logic Gate  : {}\n", self.lucky_logic_gate));
+        output.push('\n');
 
         output.push_str("Luck Scores :\n");
-        let mut active_scores: Vec<_> = self.luck_scores.iter().filter(|s| s.active).collect();
-        active_scores.sort_by(|a, b| b.score.cmp(&a.score));
+        let mut sorted_scores: Vec<_> = self.luck_scores.iter().collect();
+        sorted_scores.sort_by(|a, b| b.score.cmp(&a.score));
 
-        let display_count = if short { 5 } else { active_scores.len() };
-        for score in active_scores.iter().take(display_count) {
+        let display_count = if short { 5 } else { sorted_scores.len() };
+        for score in sorted_scores.iter().take(display_count) {
             output.push_str(&format!(
                 "{:18}: {:3} ({})\n",
                 score.luck_type.name(),
@@ -265,6 +266,26 @@ mod tests {
         assert!(json.contains("\"seed\""));
         assert!(json.contains("\"lucky_number\""));
         assert!(json.contains("\"luck_scores\""));
+    }
+
+    #[test]
+    fn test_lucky_power_of_2() {
+        let result = create_test_result();
+        let valid_powers = [1, 2, 4, 8, 16, 32, 64, 128];
+        assert!(valid_powers.contains(&result.lucky_power_of_2));
+    }
+
+    #[test]
+    fn test_lucky_ascii() {
+        let result = create_test_result();
+        assert!(result.lucky_ascii >= ' ' && result.lucky_ascii <= '~');
+    }
+
+    #[test]
+    fn test_lucky_logic_gate() {
+        let result = create_test_result();
+        let valid_gates = ["AND", "OR", "XOR", "NOT", "NAND", "NOR", "XNOR", "BUFFER"];
+        assert!(valid_gates.contains(&result.lucky_logic_gate.as_str()));
     }
 
     #[test]

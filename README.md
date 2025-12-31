@@ -32,8 +32,9 @@ Lucky Bits        : 0010 0101 0011 0100
 Lucky Day         : 2026-09-01 (244 / 365)
 Lucky Time        : 02:40
 
-Active Luck Flags :
-✖ Life  ✖ Health  ✔ Wealth  ✔ Career  ...
+Lucky Power of 2  : 64
+Lucky ASCII       : 'K'
+Lucky Logic Gate  : XOR
 
 Luck Scores :
 WiFi Luck         :  95 (Excellent)
@@ -49,7 +50,8 @@ Uses SHA-256 hash of `{year}-{seed}-{salt}` to deterministically generate:
 
 - Lucky numbers, hex, color, bits
 - Lucky day and time
-- 16 luck categories with scores and active flags
+- Lucky power of 2, ASCII, logic gate
+- 16 luck categories with scores
 
 Same input always produces the same output.
 
@@ -63,9 +65,12 @@ packet-beta
 32-40: "Lucky Day (9)"
 41-45: "Hour (5)"
 46-51: "Min (6)"
-52-115: "Luck Flags (64)"
-116-243: "Luck Scores (128)"
-244-255: "Entropy (12)"
+52-54: "Power of 2 (3)"
+55-61: "ASCII (7)"
+62-64: "Logic Gate (3)"
+65-192: "Luck Scores (128)"
+193-204: "Entropy (12)"
+205-255: "Reserved (51)"
 ```
 
 | Field | Bits | Range |
@@ -76,9 +81,12 @@ packet-beta
 | Lucky Day | 32-40 (9bit) | 1-365 |
 | Lucky Hour | 41-45 (5bit) | 0-23 |
 | Lucky Minute | 46-51 (6bit) | 0-59 |
-| Luck Flags | 52-115 (64bit) | 16 ON/OFF flags |
-| Luck Scores | 116-243 (128bit) | 16 × 8bit scores |
-| Entropy | 244-255 (12bit) | checksum display |
+| Lucky Power of 2 | 52-54 (3bit) | 2^n (1,2,4,8,16,32,64,128) |
+| Lucky ASCII | 55-61 (7bit) | printable ASCII (32-126) |
+| Lucky Logic Gate | 62-64 (3bit) | AND,OR,XOR,NOT,NAND,NOR,XNOR,BUFFER |
+| Luck Scores | 65-192 (128bit) | 16 × 8bit scores |
+| Entropy | 193-204 (12bit) | checksum display |
+| Reserved | 205-255 (51bit) | unused |
 
 ## Build from Source
 

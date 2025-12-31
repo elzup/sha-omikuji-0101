@@ -12,120 +12,107 @@ expression: result
   "lucky_day": "2026-03-30 (89 / 365)",
   "lucky_day_number": 89,
   "lucky_time": "00:12",
+  "lucky_power_of_2": 16,
+  "lucky_ascii": "?",
+  "lucky_logic_gate": "NOT",
   "luck_scores": [
     {
       "luck_type": "Life",
-      "raw_value": 21,
-      "score": 8,
-      "rank": "Terrible",
-      "active": true
+      "raw_value": 78,
+      "score": 30,
+      "rank": "Bad"
     },
     {
       "luck_type": "Health",
-      "raw_value": 167,
-      "score": 65,
-      "rank": "Normal",
-      "active": false
+      "raw_value": 4,
+      "score": 1,
+      "rank": "Terrible"
     },
     {
       "luck_type": "Wealth",
-      "raw_value": 126,
-      "score": 49,
-      "rank": "Normal",
-      "active": true
+      "raw_value": 218,
+      "score": 85,
+      "rank": "Good"
     },
     {
       "luck_type": "Career",
-      "raw_value": 56,
-      "score": 21,
-      "rank": "Bad",
-      "active": true
+      "raw_value": 204,
+      "score": 80,
+      "rank": "Good"
     },
     {
       "luck_type": "Love",
-      "raw_value": 192,
-      "score": 75,
-      "rank": "Good",
-      "active": false
+      "raw_value": 105,
+      "score": 41,
+      "rank": "Normal"
     },
     {
       "luck_type": "Marriage",
-      "raw_value": 239,
-      "score": 93,
-      "rank": "Excellent",
-      "active": true
+      "raw_value": 125,
+      "score": 49,
+      "rank": "Normal"
     },
     {
       "luck_type": "Family",
-      "raw_value": 180,
-      "score": 70,
-      "rank": "Good",
-      "active": true
+      "raw_value": 162,
+      "score": 63,
+      "rank": "Normal"
     },
     {
       "luck_type": "Friendship",
-      "raw_value": 7,
-      "score": 2,
-      "rank": "Terrible",
-      "active": true
+      "raw_value": 180,
+      "score": 70,
+      "rank": "Good"
     },
     {
       "luck_type": "Study",
-      "raw_value": 145,
-      "score": 56,
-      "rank": "Normal",
-      "active": true
+      "raw_value": 239,
+      "score": 93,
+      "rank": "Excellent"
     },
     {
       "luck_type": "Challenge",
-      "raw_value": 57,
-      "score": 22,
-      "rank": "Bad",
-      "active": true
+      "raw_value": 199,
+      "score": 78,
+      "rank": "Good"
     },
     {
       "luck_type": "Opportunity",
-      "raw_value": 77,
-      "score": 30,
-      "rank": "Bad",
-      "active": false
+      "raw_value": 24,
+      "score": 9,
+      "rank": "Terrible"
     },
     {
       "luck_type": "Motivation",
-      "raw_value": 187,
-      "score": 73,
-      "rank": "Good",
-      "active": true
+      "raw_value": 29,
+      "score": 11,
+      "rank": "Bad"
     },
     {
       "luck_type": "Debug",
-      "raw_value": 159,
-      "score": 62,
-      "rank": "Normal",
-      "active": false
+      "raw_value": 246,
+      "score": 96,
+      "rank": "Excellent"
     },
     {
       "luck_type": "WiFi",
-      "raw_value": 80,
-      "score": 31,
-      "rank": "Bad",
-      "active": false
+      "raw_value": 128,
+      "score": 50,
+      "rank": "Normal"
     },
     {
       "luck_type": "Windfall",
-      "raw_value": 215,
-      "score": 84,
-      "rank": "Good",
-      "active": true
+      "raw_value": 242,
+      "score": 94,
+      "rank": "Excellent"
     },
     {
       "luck_type": "Chaos",
-      "raw_value": 147,
-      "score": 57,
-      "rank": "Normal",
-      "active": false
+      "raw_value": 39,
+      "score": 15,
+      "rank": "Bad"
     }
   ],
-  "entropy_check": "0xA90",
+  "entropy_check": "0x29B",
   "fingerprint": "5fe36d472c00c87da7026d6634bed15a77e38c0efb40791394dbb9f50d793a90"
 }

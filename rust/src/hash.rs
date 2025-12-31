@@ -68,23 +68,46 @@ impl HashBits {
         value % 60
     }
 
-    /// bit[52..115]: Luck Flags (64bit) - each bit = ON/OFF for each Luck
-    pub fn luck_flags(&self) -> u64 {
-        self.get_bits(52, 64)
+    /// bit[52..54]: Lucky Power of 2 (3bit) -> 2^n (1,2,4,8,16,32,64,128)
+    pub fn lucky_power_of_2(&self) -> u8 {
+        let n = self.get_bits(52, 3) as u8;
+        1 << n
     }
 
-    /// bit[116..243]: Luck Scores (128bit = 8bit x 16)
+    /// bit[55..61]: Lucky ASCII (7bit) -> printable ASCII 32-126 (95 chars)
+    pub fn lucky_ascii(&self) -> char {
+        let value = self.get_bits(55, 7) as u8;
+        let ascii_code = 32 + (value % 95);
+        ascii_code as char
+    }
+
+    /// bit[62..64]: Lucky Logic Gate (3bit) -> 0-7 maps to gate
+    pub fn lucky_logic_gate(&self) -> &'static str {
+        let value = self.get_bits(62, 3) as u8;
+        match value {
+            0 => "AND",
+            1 => "OR",
+            2 => "XOR",
+            3 => "NOT",
+            4 => "NAND",
+            5 => "NOR",
+            6 => "XNOR",
+            _ => "BUFFER",
+        }
+    }
+
+    /// bit[65..192]: Luck Scores (128bit = 8bit x 16)
     pub fn luck_scores(&self) -> [u8; 16] {
         let mut scores = [0u8; 16];
         for i in 0..16 {
-            scores[i] = self.get_bits(116 + i * 8, 8) as u8;
+            scores[i] = self.get_bits(65 + i * 8, 8) as u8;
         }
         scores
     }
 
-    /// bit[244..255]: Entropy/Checksum (12bit)
+    /// bit[193..204]: Entropy/Checksum (12bit)
     pub fn entropy_check(&self) -> u16 {
-        self.get_bits(244, 12) as u16
+        self.get_bits(193, 12) as u16
     }
 
 }
@@ -200,6 +223,41 @@ mod tests {
         let hash = HashBits::from_seed(2026, "test");
         let entropy = hash.entropy_check();
         assert!(entropy <= 0xFFF); // 12 bits max
+    }
+
+    #[test]
+    fn test_lucky_power_of_2_range() {
+        for i in 0..100 {
+            let seed = format!("test-{}", i);
+            let hash = HashBits::from_seed(2026, &seed);
+            let power = hash.lucky_power_of_2();
+            assert!(
+                power == 1 || power == 2 || power == 4 || power == 8 ||
+                power == 16 || power == 32 || power == 64 || power == 128,
+                "Power of 2 not valid: {}", power
+            );
+        }
+    }
+
+    #[test]
+    fn test_lucky_ascii_range() {
+        for i in 0..100 {
+            let seed = format!("test-{}", i);
+            let hash = HashBits::from_seed(2026, &seed);
+            let ch = hash.lucky_ascii();
+            assert!(ch >= ' ' && ch <= '~', "ASCII not printable: {:?}", ch);
+        }
+    }
+
+    #[test]
+    fn test_lucky_logic_gate_valid() {
+        let valid_gates = ["AND", "OR", "XOR", "NOT", "NAND", "NOR", "XNOR", "BUFFER"];
+        for i in 0..100 {
+            let seed = format!("test-{}", i);
+            let hash = HashBits::from_seed(2026, &seed);
+            let gate = hash.lucky_logic_gate();
+            assert!(valid_gates.contains(&gate), "Invalid gate: {}", gate);
+        }
     }
 
 }

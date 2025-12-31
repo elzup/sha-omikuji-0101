@@ -100,11 +100,10 @@ pub struct LuckScore {
     pub raw_value: u8,
     pub score: u8,
     pub rank: Rank,
-    pub active: bool,
 }
 
 impl LuckScore {
-    pub fn new(luck_type: LuckType, raw_value: u8, active: bool) -> Self {
+    pub fn new(luck_type: LuckType, raw_value: u8) -> Self {
         let score = ((raw_value as u32) * 100 / 255) as u8;
         let rank = Rank::from_score(score);
         Self {
@@ -112,19 +111,15 @@ impl LuckScore {
             raw_value,
             score,
             rank,
-            active,
         }
     }
 }
 
-pub fn calculate_luck_scores(scores: &[u8; 16], flags: u64) -> Vec<LuckScore> {
+pub fn calculate_luck_scores(scores: &[u8; 16]) -> Vec<LuckScore> {
     LuckType::ALL
         .iter()
         .enumerate()
-        .map(|(i, &luck_type)| {
-            let active = (flags >> i) & 1 == 1;
-            LuckScore::new(luck_type, scores[i], active)
-        })
+        .map(|(i, &luck_type)| LuckScore::new(luck_type, scores[i]))
         .collect()
 }
 
@@ -148,13 +143,13 @@ mod tests {
 
     #[test]
     fn test_luck_score_calculation() {
-        let luck = LuckScore::new(LuckType::Wealth, 255, true);
+        let luck = LuckScore::new(LuckType::Wealth, 255);
         assert_eq!(luck.score, 100);
 
-        let luck = LuckScore::new(LuckType::Wealth, 0, true);
+        let luck = LuckScore::new(LuckType::Wealth, 0);
         assert_eq!(luck.score, 0);
 
-        let luck = LuckScore::new(LuckType::Wealth, 127, true);
+        let luck = LuckScore::new(LuckType::Wealth, 127);
         assert_eq!(luck.score, 49);
     }
 

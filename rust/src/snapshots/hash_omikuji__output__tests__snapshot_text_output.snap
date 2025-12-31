@@ -12,19 +12,26 @@ Lucky Bits        : 0110 1101 0100 0111
 Lucky Day         : 2026-03-30 (89 / 365)
 Lucky Time        : 00:12
 
-Active Luck Flags :
-✔ Life  ✖ Health  ✔ Wealth  ✔ Career  ✖ Love  ✔ Marriage  ✔ Family  ✔ Friendship  ✔ Study  ✔ Challenge  ✖ Opportunity  ✔ Motivation  ✖ Debug  ✖ WiFi  ✔ Windfall  ✖ Chaos
+Lucky Power of 2  : 16
+Lucky ASCII       : '?'
+Lucky Logic Gate  : NOT
 
 Luck Scores :
-Marriage Luck     :  93 (Excellent)
-Windfall Luck     :  84 (Good)
-Motivation Luck   :  73 (Good)
-Family Luck       :  70 (Good)
-Study Luck        :  56 (Normal)
-Wealth Luck       :  49 (Normal)
-Challenge Luck    :  22 (Bad)
-Career Luck       :  21 (Bad)
-Life Luck         :   8 (Terrible)
-Friendship Luck   :   2 (Terrible)
+Debug Luck        :  96 (Excellent)
+Windfall Luck     :  94 (Excellent)
+Study Luck        :  93 (Excellent)
+Wealth Luck       :  85 (Good)
+Career Luck       :  80 (Good)
+Challenge Luck    :  78 (Good)
+Friendship Luck   :  70 (Good)
+Family Luck       :  63 (Normal)
+WiFi Luck         :  50 (Normal)
+Marriage Luck     :  49 (Normal)
+Love Luck         :  41 (Normal)
+Life Luck         :  30 (Bad)
+Chaos Luck        :  15 (Bad)
+Motivation Luck   :  11 (Bad)
+Opportunity Luck  :   9 (Terrible)
+Health Luck       :   1 (Terrible)
 
-device:f85ac825 | 5fe36d472c00c87d | 0xA90
+device:f85ac825 | 5fe36d472c00c87d | 0x29B
