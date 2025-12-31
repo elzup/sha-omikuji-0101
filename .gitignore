@@ -1,0 +1,17 @@
+# Chat/spec files
+chat.md
+
+# Rust
+/target/
+Cargo.lock
+
+# npm
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
