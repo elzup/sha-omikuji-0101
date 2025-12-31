@@ -1,5 +1,6 @@
 ---
 source: src/output.rs
+assertion_line: 274
 expression: text
 ---
 🎍 SHA-Omikuji 2026 🎍

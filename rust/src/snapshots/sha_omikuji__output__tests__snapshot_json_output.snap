@@ -4,7 +4,7 @@ expression: result
 ---
 {
   "year": 2026,
-  "seed": "test-user",
+  "seed": "device:f85ac825",
   "lucky_number": 95,
   "lucky_hex": "0xE3",
   "lucky_color": "#E35F21",

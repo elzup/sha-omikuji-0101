@@ -2,6 +2,14 @@ use crate::hash::HashBits;
 use crate::luck::{calculate_luck_scores, LuckScore, LuckType};
 use chrono::NaiveDate;
 use serde::Serialize;
+use sha2::{Digest, Sha256};
+
+fn hash_seed_for_display(seed: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(seed.as_bytes());
+    let result = hasher.finalize();
+    format!("device:{:02x}{:02x}{:02x}{:02x}", result[0], result[1], result[2], result[3])
+}
 
 #[derive(Debug, Serialize)]
 pub struct OmikujiResult {
@@ -52,7 +60,7 @@ impl OmikujiResult {
 
         Self {
             year,
-            seed: seed.to_string(),
+            seed: hash_seed_for_display(seed),
             lucky_number,
             lucky_hex,
             lucky_color,
@@ -106,14 +114,13 @@ impl OmikujiResult {
                 score.rank.as_str()
             ));
         }
-        output.push('\n');
-
-        output.push_str(&format!("Entropy Check     : OK ({})\n", self.entropy_check));
-
-
         if show_seed {
-            output.push_str(&format!("\nSeed              : {}\n", self.seed));
-            output.push_str(&format!("Fingerprint       : {}\n", self.fingerprint));
+            output.push_str(&format!(
+                "\n{} | {} | {}\n",
+                self.seed,
+                &self.fingerprint[..16],
+                self.entropy_check
+            ));
         }
 
         output
@@ -150,7 +157,9 @@ mod tests {
     #[test]
     fn test_result_seed() {
         let result = create_test_result();
-        assert_eq!(result.seed, "test-user");
+        // Seed is now hashed for privacy: "device:{8-char-hex}"
+        assert!(result.seed.starts_with("device:"));
+        assert_eq!(result.seed.len(), 15); // "device:" + 8 hex chars
     }
 
     #[test]
@@ -234,9 +243,9 @@ mod tests {
         let result = create_test_result();
         let text_with_seed = result.format_text(false, true);
         let text_without_seed = result.format_text(false, false);
-        assert!(text_with_seed.contains("Seed"));
-        assert!(text_with_seed.contains("Fingerprint"));
-        assert!(!text_without_seed.contains("Seed"));
+        assert!(text_with_seed.contains("device:"));
+        assert!(text_with_seed.contains("|"));
+        assert!(!text_without_seed.contains("device:"));
     }
 
     #[test]
