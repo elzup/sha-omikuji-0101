@@ -3,40 +3,32 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const os = require('os');
-const fs = require('fs');
 
-function getBinaryName() {
+const PLATFORMS = {
+  'darwin-arm64': '@hash-omikuji/darwin-arm64',
+  'darwin-x64': '@hash-omikuji/darwin-x64',
+  'linux-x64': '@hash-omikuji/linux-x64',
+  'win32-x64': '@hash-omikuji/win32-x64',
+};
+
+function getBinaryPath() {
   const platform = os.platform();
   const arch = os.arch();
+  const platformKey = `${platform}-${arch === 'arm64' ? 'arm64' : 'x64'}`;
 
-  let binaryName = 'hash-omikuji';
-
-  if (platform === 'win32') {
-    binaryName += '.exe';
-  }
-
-  // Map to binary directory structure
-  let platformDir;
-  if (platform === 'darwin') {
-    platformDir = arch === 'arm64' ? 'darwin-arm64' : 'darwin-x64';
-  } else if (platform === 'linux') {
-    platformDir = 'linux-x64';
-  } else if (platform === 'win32') {
-    platformDir = 'win32-x64';
-  } else {
-    console.error(`Unsupported platform: ${platform}`);
+  const packageName = PLATFORMS[platformKey];
+  if (!packageName) {
+    console.error(`Unsupported platform: ${platform}-${arch}`);
     process.exit(1);
   }
 
-  return path.join(__dirname, 'bin', platformDir, binaryName);
-}
+  const binaryName = platform === 'win32' ? 'hash-omikuji.exe' : 'hash-omikuji';
 
-function main() {
-  const binaryPath = getBinaryName();
-
-  // Check if binary exists
-  if (!fs.existsSync(binaryPath)) {
-    console.error(`Binary not found: ${binaryPath}`);
+  try {
+    const packagePath = require.resolve(`${packageName}/package.json`);
+    return path.join(path.dirname(packagePath), binaryName);
+  } catch (e) {
+    console.error(`Platform package not found: ${packageName}`);
     console.error('');
     console.error('The pre-built binary for your platform is not available.');
     console.error('Please build from source:');
@@ -44,8 +36,10 @@ function main() {
     console.error('  2. Clone the repo and run: cargo build --release');
     process.exit(1);
   }
+}
 
-  // Pass all arguments to the binary
+function main() {
+  const binaryPath = getBinaryPath();
   const args = process.argv.slice(2);
 
   const child = spawn(binaryPath, args, {

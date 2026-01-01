@@ -140,12 +140,13 @@ impl OmikujiResult {
         }
         if show_seed {
             output.push_str(&format!(
-                "\n{} | {} | {}\n",
+                "\n{} | {}\n",
                 self.seed,
-                &self.fingerprint[..16],
                 self.entropy_check
             ));
         }
+
+        output.push_str(&format!("\n[raw hash: {}]\n", self.fingerprint));
 
         output
     }

@@ -1,0 +1,13 @@
+{
+  "name": "@hash-omikuji/darwin-arm64",
+  "version": "0.1.0",
+  "description": "Darwin ARM64 binary for hash-omikuji",
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "files": ["hash-omikuji"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elzup/hash-omikuji"
+  },
+  "license": "MIT"
+}

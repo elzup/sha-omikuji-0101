@@ -26,13 +26,10 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
-  "cpu": [
-    "x64",
-    "arm64"
-  ]
+  "optionalDependencies": {
+    "@hash-omikuji/darwin-arm64": "0.1.0",
+    "@hash-omikuji/darwin-x64": "0.1.0",
+    "@hash-omikuji/linux-x64": "0.1.0",
+    "@hash-omikuji/win32-x64": "0.1.0"
+  }
 }

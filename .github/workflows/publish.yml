@@ -1,0 +1,116 @@
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.1.0)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            platform: darwin-arm64
+            binary: hash-omikuji
+          - os: macos-13
+            target: x86_64-apple-darwin
+            platform: darwin-x64
+            binary: hash-omikuji
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            platform: linux-x64
+            binary: hash-omikuji
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform: win32-x64
+            binary: hash-omikuji.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --manifest-path rust/Cargo.toml --target ${{ matrix.target }}
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: rust/target/${{ matrix.target }}/release/${{ matrix.binary }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: npm/platforms
+
+      - name: Set version
+        working-directory: npm
+        run: |
+          VERSION="${{ inputs.version }}"
+          node -e "
+          const fs = require('fs');
+          const platforms = ['darwin-arm64', 'darwin-x64', 'linux-x64', 'win32-x64'];
+
+          // Update main package
+          const main = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          main.version = '$VERSION';
+          for (const p of platforms) {
+            main.optionalDependencies[\`@hash-omikuji/\${p}\`] = '$VERSION';
+          }
+          fs.writeFileSync('package.json', JSON.stringify(main, null, 2) + '\n');
+
+          // Update platform packages
+          for (const p of platforms) {
+            const pkgPath = \`platforms/\${p}/package.json\`;
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+          }
+          "
+
+      - name: Make binaries executable
+        run: |
+          chmod +x npm/platforms/darwin-arm64/hash-omikuji
+          chmod +x npm/platforms/darwin-x64/hash-omikuji
+          chmod +x npm/platforms/linux-x64/hash-omikuji
+
+      - name: Publish platform packages
+        working-directory: npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for platform in darwin-arm64 darwin-x64 linux-x64 win32-x64; do
+            echo "Publishing @hash-omikuji/$platform..."
+            cd "platforms/$platform"
+            npm publish --provenance --access public
+            cd ../..
+          done
+
+      - name: Publish main package
+        working-directory: npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
